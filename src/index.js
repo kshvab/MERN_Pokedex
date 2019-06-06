@@ -1,10 +1,17 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-//import './index.css';
+import './bootstrap.css';
 import * as serviceWorker from './serviceWorker';
 import DevTools from 'mobx-react-devtools';
 import { observable, computed, configure, action, decorate } from 'mobx';
 import { observer } from 'mobx-react';
+
+import Header from './components/header';
+import Navbar from './components/navbar';
+import User from './components/user';
+
+import { BrowserRouter, Route } from 'react-router-dom';
+
 configure({ enforceActions: 'observed' });
 
 class Store {
@@ -123,8 +130,12 @@ class Controls extends Component {
   render() {
     return (
       <div className="controls">
-        <button onClick={this.clearList}>Clear table</button>
-        <button onClick={this.addDeveloper}>Add record</button>
+        <button className="btn btn-primary" onClick={this.clearList}>
+          Clear table
+        </button>
+        <button className="btn btn-primary" onClick={this.addDeveloper}>
+          Add record
+        </button>
         <input
           value={this.props.store.filter}
           onChange={this.filterDevelopers}
@@ -137,12 +148,26 @@ class Controls extends Component {
 class App extends Component {
   render() {
     return (
-      <div>
-        <DevTools />
-        <h1>Sprint Board</h1>
-        <Controls store={appStore} />
-        <Table store={appStore} />
-      </div>
+      <BrowserRouter>
+        <div>
+          <DevTools />
+          <Header />
+          <Navbar />
+          <div className="container">
+            <div className="row">
+              <div className="col-lg-3">Sidebar</div>
+              <div className="col-lg-9">
+                <h1>Sprint Board</h1>
+
+                <Controls store={appStore} />
+                <Table store={appStore} />
+
+                <Route path="/user" component={User} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </BrowserRouter>
     );
   }
 }
