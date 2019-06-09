@@ -5,7 +5,7 @@ const Promo = () => {
     <div>
       <div className="promo-box img-promo">
         <div className="hover-effect">
-          <a href="/#" className="hover-text">
+          <a href="/about" className="hover-text">
             <h1>An Awesome Node.js</h1>
             <p>Stack: react, mobx, bootstrap </p>
           </a>

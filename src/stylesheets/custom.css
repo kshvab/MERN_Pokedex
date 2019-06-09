@@ -210,3 +210,14 @@
   color: #000 !important;
   background-color: #ffffff !important;
 }
+.badges-raw {
+  text-align: right;
+}
+.badge-tag-item {
+  margin-left: 10px;
+}
+
+.badge {
+  padding: 0.4em 0.5em;
+  font-size: 80%;
+}

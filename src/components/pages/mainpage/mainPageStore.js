@@ -1,5 +1,5 @@
 import {
-  autorun,
+  //autorun,
   observable,
   computed,
   configure,
@@ -25,7 +25,7 @@ class MainPageStore {
   pokemonArr = [];
 
   fetchPokemons() {
-    for (let i = 0; i < 51; i++) {
+    for (let i = 0; i < 73; i++) {
       fetch(`http://pokeapi.co/api/v2/pokemon/${i}`)
         .then(response => {
           if (response.ok === true) {
@@ -56,61 +56,148 @@ class MainPageStore {
     this.pokemonArr.push(value);
   }
 
-  isTagShownObj = {
-    normal: true,
-    fighting: true,
-    flying: true,
-    poison: true,
-    ground: true,
-    rock: true,
-    bug: true,
-    ghost: true,
-    steel: true,
-    fire: true,
-    water: true,
-    grass: true,
-    electric: true,
-    psychic: true,
-    ice: true,
-    dragon: true,
-    dark: true,
-    fairy: true,
-    unknown: true,
-    shadow: true
-  };
+  isTagShownArr = [
+    { name: 'normal', status: false },
+    { name: 'fighting', status: false },
+    { name: 'poison', status: false },
+    { name: 'ground', status: false },
+    { name: 'rock', status: false },
+    { name: 'bug', status: false },
+    { name: 'ghost', status: false },
+    { name: 'flying', status: false },
+    { name: 'steel', status: false },
+    { name: 'fire', status: false },
+    { name: 'water', status: false },
+    { name: 'grass', status: false },
+    { name: 'electric', status: false },
+    { name: 'psychic', status: false },
+    { name: 'ice', status: false },
+    { name: 'dragon', status: false },
+    { name: 'dark', status: false },
+    { name: 'fairy', status: false },
+    { name: 'unknown', status: false },
+    { name: 'shadow', status: false }
+  ];
 
   filter = '';
 
   updateFilter(value) {
     this.filter = value;
   }
-  /*
+
+  updateTagFilter(value) {
+    for (let i = 0; i < this.isTagShownArr.length; i++) {
+      if (this.isTagShownArr[i].name === value)
+        this.isTagShownArr[i].status = !this.isTagShownArr[i].status;
+    }
+  }
+
   get filteredPokemonArr() {
     const matchesFilter = new RegExp(this.filter, 'i');
     return this.pokemonArr.filter(
       ({ name }) => !this.filter || matchesFilter.test(name)
     );
   }
-*/
+
+  get tagFilteredPokemonArr() {
+    let existFilter = false;
+    for (let i = 0; i < this.isTagShownArr.length; i++) {
+      if (this.isTagShownArr[i].status === true) existFilter = true;
+    }
+
+    if (!existFilter) return this.filteredPokemonArr;
+    else {
+      let tagFilteredArr = [];
+      for (let i = 0; i < this.isTagShownArr.length; i++) {
+        if (this.isTagShownArr[i].status) {
+          console.log(
+            this.isTagShownArr[i].name + ' - ' + this.isTagShownArr[i].status
+          );
+
+          //if (this.isTagShownArr[i].status) {
+          for (let k = 0; k < this.filteredPokemonArr.length; k++) {
+            if (this.isTagShownArr[i].name === this.filteredPokemonArr[k].type)
+              tagFilteredArr.push(this.filteredPokemonArr[k]);
+          }
+        }
+        //}
+      }
+
+      return tagFilteredArr;
+    }
+  }
+
+  itemsPerPage = 10;
+
+  updateItemsPerPage(val) {
+    this.itemsPerPage = val;
+  }
+
+  page = 1;
+  updatePage(val) {
+    this.page = val;
+  }
+
+  get len() {
+    return this.tagFilteredPokemonArr.length;
+  }
+
+  get rest() {
+    return this.len % this.itemsPerPage;
+  }
+
+  get fullPages() {
+    return (this.len - this.rest) / this.itemsPerPage;
+  }
+
+  get pages() {
+    return this.fullPages + 1;
+  }
+
+  get rWide() {
+    if (+this.page === 1) return 5;
+    else if (+this.page === 2) return 4;
+    else return 3;
+  }
+
+  get lWide() {
+    if (+this.page === +this.pages) return 5;
+    if (+this.page === +this.pages - 1) return 4;
+    else return 3;
+  }
 }
 
 decorate(MainPageStore, {
   pokemonArr: observable,
+  itemsPerPage: observable,
   fetchPokemons: action.bound,
   addPokemonToPokemonArr: action.bound,
   filter: observable,
-  updateFilter: action
+  updateFilter: action,
+  updateTagFilter: action,
+  filteredPokemonArr: computed,
+  updateItemsPerPage: action,
+  page: observable,
+  updatePage: action,
+  len: computed,
+  rest: computed,
+  fullPages: computed,
+  pages: computed,
+  rWide: computed,
+  lWide: computed,
+  isTagShownArr: observable,
+  tagFilteredPokemonArr: computed
 });
 
 let store = (window.store = new MainPageStore());
 
-let pokemon = new Pokemon();
-
 export default store;
 
+/*
 autorun(() => {
   console.log('myPokemon: ' + store.myPokemon);
   console.log('pokemon.name: ' + pokemon.name);
   console.log('store.filter: ' + store.filter);
   //console.log('store.pokemonArr[0]: ' + store.pokemonArr);
 });
+*/
