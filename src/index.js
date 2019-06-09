@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Route } from 'react-router-dom';
-
 import './stylesheets/bootstrap.css';
 import './stylesheets/custom.css';
 
@@ -17,7 +16,7 @@ import Promo from './components/layout/promo';
 /*************** PAGEs *************/
 import About from './components/pages/about';
 import User from './components/pages/user';
-import Mainpage from './components/pages/mainpage';
+import Mainpage from './components/pages/mainpage/mainpage';
 import Saved from './components/pages/saved';
 class App extends Component {
   render() {

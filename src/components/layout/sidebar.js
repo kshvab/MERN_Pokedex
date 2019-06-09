@@ -23,9 +23,9 @@ const Sidebar = () => {
           </p>
         </div>
       </div>
-      <div class="pokemon-body">
-        <div class="pokemon">
-          <div class="go" />
+      <div className="pokemon-body">
+        <div className="pokemon">
+          <div className="go" />
         </div>
       </div>
     </div>
