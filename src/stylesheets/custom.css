@@ -221,3 +221,15 @@
   padding: 0.4em 0.5em;
   font-size: 80%;
 }
+
+.fa-heart-item {
+  margin-right: 8px;
+}
+
+.card-body-auth {
+  text-align: center;
+}
+
+.hidden {
+  visibility: hidden;
+}

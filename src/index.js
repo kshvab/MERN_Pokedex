@@ -5,27 +5,25 @@ import './stylesheets/bootstrap.css';
 import './stylesheets/custom.css';
 
 import * as serviceWorker from './serviceWorker';
-import DevTools from 'mobx-react-devtools';
+//import DevTools from 'mobx-react-devtools';
 
 /*************** LAYOUT *************/
-import Header from './components/layout/header';
+//import Header from './components/layout/header';
 import Navbar from './components/layout/navbar';
 import Sidebar from './components/layout/sidebar';
 import Promo from './components/layout/promo';
 
 /*************** PAGEs *************/
 import About from './components/pages/about';
-import User from './components/pages/user';
+
 import Mainpage from './components/pages/mainpage/mainpage';
-import Saved from './components/pages/saved';
 
 class App extends Component {
   render() {
     return (
       <BrowserRouter>
         <div>
-          <DevTools />
-          <Header />
+          {/*<DevTools />*/}
           <Navbar />
           <div className="container">
             <div className="row">
@@ -36,8 +34,6 @@ class App extends Component {
                 <Promo />
                 <Route exact path="/" component={Mainpage} />
                 <Route path="/about" component={About} />
-                <Route path="/user" component={User} />
-                <Route path="/saved" component={Saved} />
               </div>
             </div>
           </div>
@@ -50,3 +46,4 @@ class App extends Component {
 ReactDOM.render(<App />, document.getElementById('root'));
 
 serviceWorker.unregister();
+//

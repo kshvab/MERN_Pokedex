@@ -54,19 +54,10 @@ class Navbar extends Component {
                   Home
                 </NavLink>
               </li>
-              <li className="nav-item">
-                <NavLink className="nav-link" to="/user">
-                  User
-                </NavLink>
-              </li>
+
               <li className="nav-item">
                 <NavLink className="nav-link" to="/about">
                   About
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink className="nav-link" to="/saved">
-                  Saved
                 </NavLink>
               </li>
             </ul>

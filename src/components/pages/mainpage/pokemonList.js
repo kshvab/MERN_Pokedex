@@ -7,14 +7,20 @@ class PokemonList extends Component {
     this.props.store.fetchPokemons();
   }
 
+  pokemonToFavorite = event => {
+    this.props.store.pokemonToFavorite(event.target.value);
+  };
+
   render() {
     const { page, len, itemsPerPage, tagFilteredPokemonArr } = this.props.store;
+    const { user } = this.props.store;
 
     let pokemons = [];
 
     let pokemonsData = tagFilteredPokemonArr;
+
     for (var i = page * itemsPerPage - itemsPerPage; i < len; i++) {
-      if (pokemonsData[i] && i < page * itemsPerPage)
+      if (pokemonsData[i] && i < page * itemsPerPage) {
         pokemons.push(
           <div key={pokemonsData[i].id} className="pokemon-list-item">
             <div className="card border-success mb-3">
@@ -26,7 +32,21 @@ class PokemonList extends Component {
                       {pokemonsData[i].type}
                     </span>
                   </div>
-                  <div className="col-lg-3">Actions</div>
+                  <div className="col-lg-3">
+                    <button
+                      value={pokemonsData[i].id}
+                      type="button"
+                      className={
+                        (pokemonsData[i].isFavorite
+                          ? 'btn btn-danger btn-sm'
+                          : 'btn btn-outline-danger btn-sm') +
+                        (user.isLoggedIn ? '' : ' hidden')
+                      }
+                      onClick={this.pokemonToFavorite}
+                    >
+                      <span className="fas fa-heart fa-heart-item" /> Favorite
+                    </button>
+                  </div>
                 </div>
               </div>
               <div className="card-body">
@@ -64,17 +84,21 @@ class PokemonList extends Component {
             </div>
           </div>
         );
+      }
     }
 
     return (
       <div>
         <h3>LIST</h3>
+
         <div className="pokemon-list">{pokemons}</div>
+        <div className="hidden">{JSON.stringify(user)} </div>
       </div>
     );
   }
 }
 
 export default PokemonList;
-
+//className="hidden"
 //<button onClick={this.getPokemon}>downloadPokemons</button>;
+//<div>{JSON.stringify(user)} </div>

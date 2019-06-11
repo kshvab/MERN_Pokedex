@@ -1,14 +1,14 @@
 import React from 'react';
-import Auth from '../pages/auth/auth';
-
+import Auth from '../pages/user/auth';
+import store from '../stores/mainPageStore';
 const Sidebar = () => {
   return (
     <div>
       <div className="card border-primary mb-3 k8-card-sidebar">
         <div className="card-header">User</div>
         <div className="card-body">
-          <div>
-            <Auth />
+          <div className="card-body-auth">
+            <Auth store={store} />
           </div>
         </div>
       </div>
@@ -27,8 +27,7 @@ const Sidebar = () => {
         <div className="card-body">
           <h4 className="card-title">Full Stack</h4>
           <p className="card-text">
-            Some quick example text to build on the card title and make up the
-            bulk of the card's content.
+            Problems: Bad reactivity of elements (favorite button)
           </p>
         </div>
       </div>

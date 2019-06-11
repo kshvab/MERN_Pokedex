@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import store from './mainPageStore';
+import store from '../../stores/mainPageStore';
+
 import PokemonList from './pokemonList';
 import PokemonFilters from './pokemonFilters';
 @observer
