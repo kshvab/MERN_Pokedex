@@ -1,6 +1,7 @@
 import React from 'react';
-import Auth from '../pages/user/auth';
-import store from '../stores/mainPageStore';
+//import Auth from '../pages/user/auth';
+//import store from '../stores/mainPageStore';
+import GoogleLogin from '../pages/user/googleAuth';
 const Sidebar = () => {
   return (
     <div>
@@ -8,7 +9,7 @@ const Sidebar = () => {
         <div className="card-header">User</div>
         <div className="card-body">
           <div className="card-body-auth">
-            <Auth store={store} />
+            <GoogleLogin />
           </div>
         </div>
       </div>
@@ -41,3 +42,4 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+//<Auth store={store} />

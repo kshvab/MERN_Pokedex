@@ -9,17 +9,44 @@ class PokemonList extends Component {
 
   pokemonToFavorite = event => {
     this.props.store.pokemonToFavorite(event.target.value);
+    this.props.store.fillFavoriteArr();
   };
 
   render() {
-    const { page, len, itemsPerPage, tagFilteredPokemonArr } = this.props.store;
+    const {
+      page,
+      len,
+      itemsPerPage,
+      tagFilteredPokemonArr,
+      favoriteArr
+    } = this.props.store;
     const { user } = this.props.store;
-
+    console.log(localStorage);
     let pokemons = [];
-
+    let favButClass = '';
+    if (!this.props.store.currentUser.id) favButClass = 'hide';
     let pokemonsData = tagFilteredPokemonArr;
+    //console.log(pokemonsData);
+    //console.log(this.props.store.favoriteArr);
+    //console.log(this.props.store.currentUser.id);
+    let favButton;
 
     for (var i = page * itemsPerPage - itemsPerPage; i < len; i++) {
+      if (this.props.store.currentUser.id)
+        favButton = (
+          <button
+            value={pokemonsData[i].id}
+            type="button"
+            className={
+              (pokemonsData[i].isFavorite
+                ? 'btn btn-danger btn-sm'
+                : 'btn btn-outline-danger btn-sm') + ''
+            }
+            onClick={this.pokemonToFavorite}
+          >
+            <span className="fas fa-heart fa-heart-item" /> Favorite
+          </button>
+        );
       if (pokemonsData[i] && i < page * itemsPerPage) {
         pokemons.push(
           <div key={pokemonsData[i].id} className="pokemon-list-item">
@@ -32,21 +59,8 @@ class PokemonList extends Component {
                       {pokemonsData[i].type}
                     </span>
                   </div>
-                  <div className="col-lg-3">
-                    <button
-                      value={pokemonsData[i].id}
-                      type="button"
-                      className={
-                        (pokemonsData[i].isFavorite
-                          ? 'btn btn-danger btn-sm'
-                          : 'btn btn-outline-danger btn-sm') +
-                        (user.isLoggedIn ? '' : ' hidden')
-                      }
-                      onClick={this.pokemonToFavorite}
-                    >
-                      <span className="fas fa-heart fa-heart-item" /> Favorite
-                    </button>
-                  </div>
+
+                  <div className="col-lg-3">{favButton}</div>
                 </div>
               </div>
               <div className="card-body">
@@ -92,7 +106,7 @@ class PokemonList extends Component {
         <h3>LIST</h3>
 
         <div className="pokemon-list">{pokemons}</div>
-        <div className="hidden">{JSON.stringify(user)} </div>
+        <div className="hidden">{favoriteArr} </div>
       </div>
     );
   }
@@ -102,3 +116,7 @@ export default PokemonList;
 //className="hidden"
 //<button onClick={this.getPokemon}>downloadPokemons</button>;
 //<div>{JSON.stringify(user)} </div>
+//(user.isLoggedIn ? '' : ' hidden')
+//<div className="hidden">{JSON.stringify(user)} </div>
+
+//{this.props.store.favoriteArr}

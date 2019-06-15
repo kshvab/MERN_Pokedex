@@ -2,10 +2,8 @@ const mongoose = require('mongoose');
 
 const userSchema = mongoose.Schema(
   {
-    userID: String,
+    id: String,
     name: String,
-    email: String,
-    picture: String,
     favorite: [
       {
         id: String

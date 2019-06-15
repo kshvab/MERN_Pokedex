@@ -9,6 +9,7 @@ class Mainpage extends Component {
   render() {
     return (
       <div>
+        {this.sssss}
         <PokemonFilters store={store} />
         <PokemonList store={store} />
       </div>

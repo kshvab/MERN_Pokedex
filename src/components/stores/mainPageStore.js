@@ -19,16 +19,69 @@ class Pokemon {
   defense;
   attack;
   hp;
-  isFavorite = false;
+  isFavorite;
 }
 
 class MainPageStore {
+  currentUser = {
+    name: '',
+    id: '',
+    favorite: []
+  };
+
+  updateCurrentUser(name, id) {
+    this.currentUser.name = name;
+    this.currentUser.id = id;
+    let loginedgUser = {
+      name,
+      id
+    };
+    localStorage.setItem('currentUserName', name);
+    localStorage.setItem('currentUserId', id);
+    axios
+      .get('http://localhost:4000/user')
+      .then(response => {
+        //console.log(response.data);
+        let usersArr = response.data;
+        let index = usersArr.findIndex(x => x.id === id);
+        //console.log('index ' + index);
+        if (index !== -1) {
+          if (usersArr[index].favorite.length) {
+            this.currentUser.favorite = usersArr[index].favorite;
+
+            this.updateFavoriteFromDb(usersArr[index].favorite);
+          }
+        } else {
+          //Creating New User
+          axios
+            .post('http://localhost:4000/user/add', loginedgUser)
+            .then(res => console.log(res.data));
+        }
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+  }
+
+  updateFavoriteFromDb(arr) {
+    for (let i = 0; i < arr.length; i++) {
+      let pokeIndex = this.pokemonArr.findIndex(x => +x.id === +arr[i].id);
+      //console.log(pokeIndex);
+      if (pokeIndex !== -1) {
+        this.pokemonArr[pokeIndex].isFavorite = 1;
+      }
+    }
+    //console.log(this.pokemonArr);
+    this.updateFilter('f');
+    this.updateFilter('');
+  }
+
   pokemonArr = [];
 
+  qwantyty = 30;
   fetchPokemons() {
-    let qwantyty = 72;
     let readyIndex = 0;
-    for (let i = 0; i < qwantyty; i++) {
+    for (let i = 0; i < this.qwantyty; i++) {
       readyIndex++;
       fetch(`https://pokeapi.co/api/v2/pokemon/${i}`)
         .then(response => {
@@ -48,14 +101,12 @@ class MainPageStore {
           pokemon.defense = response.stats[3].base_stat;
           pokemon.attack = response.stats[4].base_stat;
           pokemon.hp = response.stats[5].base_stat;
+          pokemon.isFavorite = 0;
           this.addPokemonToPokemonArr(pokemon);
         })
         .catch(error => {
           return;
         });
-      if (readyIndex === qwantyty && this.user.isLoggedIn) {
-        this.favoriteFromDbToUser();
-      }
     }
   }
 
@@ -125,23 +176,10 @@ class MainPageStore {
       let tagFilteredArr = [];
       for (let i = 0; i < this.isTagShownArr.length; i++) {
         if (this.isTagShownArr[i].status) {
-          console.log(
-            this.isTagShownArr[i].name + ' - ' + this.isTagShownArr[i].status
-          );
-
-          //if (this.isTagShownArr[i].status) {
           for (let k = 0; k < this.filteredPokemonArr.length; k++) {
             if (this.isTagShownArr[i].name === this.filteredPokemonArr[k].type)
               tagFilteredArr.push(this.filteredPokemonArr[k]);
           }
-        }
-        //}
-      }
-
-      for (let i = 0; i < this.user.favorite.length; i++) {
-        for (let p = 0; p < tagFilteredArr.length; p++) {
-          if (this.user.favorite[i].id === tagFilteredArr[p].id)
-            tagFilteredArr[p].isFavorite = true;
         }
       }
 
@@ -187,137 +225,35 @@ class MainPageStore {
     if (+this.page === +this.pages - 1) return 4;
     else return 3;
   }
-  //-----------------------------------------------------------
-  user = {
-    isLoggedIn: false,
-    userID: '',
-    name: '',
-    email: '',
-    picture: '',
-    favorite: []
-  };
 
-  setUser(val) {
-    this.user = val;
+  //favoriteArr = Array(100).fill(0);
+
+  favoriteArr = [];
+
+  fillFavoriteArr() {
+    this.favoriteArr = Array(this.qwantyty).fill(0);
+    for (let i = 0; i < this.pokemonArr.length; i++) {
+      this.favoriteArr[this.pokemonArr[i].id] = this.pokemonArr[i].isFavorite;
+    }
   }
-
-  logout() {
-    this.user = {
-      isLoggedIn: false,
-      userID: '',
-      name: '',
-      email: '',
-      picture: ''
-    };
-  }
-
-  responseFacebook = response => {
-    //console.log('Comes from FB:');
-    //console.log(response);
-    this.user = {
-      isLoggedIn: true,
-      userID: response.userID,
-      name: response.name,
-      email: response.email,
-      picture: response.picture.data.url
-    };
-    //console.log('this.user ' + this.user.isLoggedIn);
-    this.userLogin(response);
-  };
-
-  userLogin(userFromFb) {
-    const user = {
-      userID: userFromFb.userID,
-      name: userFromFb.name,
-      email: userFromFb.email,
-      picture: userFromFb.picture.data.url
-    };
-
-    axios
-      .get('http://localhost:4000/user')
-      .then(response => {
-        //console.log(response.data);
-        let usersArr = response.data;
-        let isRegistered = false;
-        let userFromDb = {};
-        for (let i = 0; i < usersArr.length; i++) {
-          if (usersArr[i].userID === userFromFb.userID) {
-            isRegistered = true;
-            userFromDb = usersArr[i];
-          }
-        }
-        //console.log(isRegistered);
-        if (isRegistered) {
-          if (userFromDb.favorite) {
-            this.user.favorite = userFromDb.favorite;
-          }
-        } else {
-          axios
-            .post('http://localhost:4000/user/add', user)
-            .then(res => console.log(res.data));
-        }
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
-  }
-
-  componentClicked = () => console.log('login button pushed');
 
   pokemonToFavorite(value) {
-    let isInFavorite = false;
-    let index = 0;
-    for (let i = 0; i < this.user.favorite.length; i++) {
-      if (+this.user.favorite[i].id === +value) {
-        isInFavorite = true;
-        index = i;
-      }
+    //After Button Clic
+    let index = this.pokemonArr.findIndex(x => +x.id === +value);
+    if (index !== -1) {
+      this.pokemonArr[index].isFavorite = this.pokemonArr[index].isFavorite
+        ? 0
+        : 1;
     }
 
-    let valueForPokemonArr;
-    if (isInFavorite) {
-      this.user.favorite.splice(index, 1);
-      valueForPokemonArr = false;
-    } else {
-      this.user.favorite.push({ id: value });
-      valueForPokemonArr = true;
-    }
-
-    for (let i = 0; i < this.tagFilteredPokemonArr.length; i++) {
-      if (+this.tagFilteredPokemonArr[i].id === +value)
-        this.tagFilteredPokemonArr[i].isFavorite = valueForPokemonArr;
-    }
-    console.log(this.user.favorite);
+    this.currentUser.favorite = this.pokemonArr.filter(x => x.isFavorite === 1);
 
     axios
-      .post('http://localhost:4000/user/update/' + this.user.userID, this.user)
+      .post(
+        'http://localhost:4000/user/update/' + this.currentUser.id,
+        this.currentUser
+      )
       .then(res => console.log(res.data));
-  }
-
-  favoriteFromDbToUser() {
-    axios
-      .get('http://localhost:4000/user')
-      .then(response => {
-        //console.log(response.data);
-        let usersArr = response.data;
-        let isRegistered = false;
-        let userFromDb = {};
-        for (let i = 0; i < usersArr.length; i++) {
-          if (usersArr[i].userID === this.user.userID) {
-            isRegistered = true;
-            userFromDb = usersArr[i];
-          }
-        }
-        //console.log(isRegistered);
-        if (isRegistered) {
-          if (userFromDb.favorite) {
-            this.user.favorite = userFromDb.favorite;
-          }
-        }
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
   }
 }
 
@@ -326,10 +262,13 @@ decorate(MainPageStore, {
   itemsPerPage: observable,
   fetchPokemons: action.bound,
   addPokemonToPokemonArr: action.bound,
+  isTagShownArr: observable,
   filter: observable,
   updateFilter: action,
   updateTagFilter: action,
   filteredPokemonArr: computed,
+  favoritePokemonArr: computed,
+  tagFilteredPokemonArr: computed,
   updateItemsPerPage: action,
   page: observable,
   updatePage: action,
@@ -339,17 +278,12 @@ decorate(MainPageStore, {
   pages: computed,
   rWide: computed,
   lWide: computed,
-  isTagShownArr: observable,
-  tagFilteredPokemonArr: computed,
-  favoritePokemonArr: computed,
-  user: observable,
-  setUser: action,
-  logout: action,
-  responseFacebook: action.bound,
-  componentClicked: action,
-  userLogin: action.bound,
-  pokemonToFavorite: action.bound,
-  favoriteFromDbToUser: action
+  pokemonToFavorite: action,
+  favoriteArr: observable,
+  fillFavoriteArr: action,
+  currentUser: observable,
+  updateCurrentUser: action,
+  updateFavoriteFromDb: action
 });
 
 let store = (window.store = new MainPageStore());

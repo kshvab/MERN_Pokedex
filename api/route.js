@@ -38,8 +38,9 @@ userRoutes.route('/edit/:id').get(function(req, res) {
 
 //  Defined update route
 userRoutes.route('/update/:id').post(function(req, res) {
+  console.log(req.body.favorite);
   User.findOneAndUpdate(
-    { userID: req.params.id }, // критерий выборки
+    { id: req.params.id }, // критерий выборки
     {
       $set: {
         favorite: req.body.favorite
